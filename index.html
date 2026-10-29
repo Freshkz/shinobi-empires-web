@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Shinobi Empires: RTS ninja en 3D low-poly para Windows. Levantá tu aldea, entrená ninjas y jugá solo o en cooperativo.">
+<meta property="og:title" content="Shinobi Empires">
+<meta property="og:description" content="RTS ninja en 3D. Descargalo gratis para Windows.">
+<meta property="og:image" content="img/hero.jpg">
+<link rel="icon" href="img/logo.png">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Shinobi Empires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: full-bleed key art hero, then lacquer-dark bands framed like the in-game HUD (crimson + gold trim). Single dark look on purpose. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0a0b;          /* page ground, warm black */
+  --lacquer: #1a1113;      /* raised panels */
+  --lacquer-2: #24171a;
+  --crimson: #b3203a;      /* logo red */
+  --crimson-hi: #d6304d;
+  --gold: #d9a441;         /* HUD trim */
+  --paper: #f1e9df;        /* main text */
+  --mist: #b8aca4;         /* secondary text */
+  --line: #4a2a2f;
+  --font-display: "Shippori Mincho B1", "Yu Mincho", Georgia, serif;
+  --font-body: "Zen Kaku Gothic New", "Segoe UI", system-ui, sans-serif;
+  --wrap: 1180px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--ink); color: var(--paper); font-family: var(--font-body); font-size: 16px; line-height: 1.65; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--ink); }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+p { margin: 0; }
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* NAV */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: color-mix(in srgb, var(--ink) 82%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-weight: 800; letter-spacing: .04em; }
+.brand .shuriken { width: 22px; height: 22px; color: var(--crimson-hi); }
+.nav ul { list-style: none; display: flex; gap: 24px; margin: 0; padding: 0; font-size: .92rem; }
+.nav ul a { text-decoration: none; color: var(--mist); transition: color .2s; }
+.nav ul a:hover { color: var(--paper); }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; font-weight: 700; text-decoration: none; letter-spacing: .03em; border: 1px solid var(--gold); background: linear-gradient(180deg, var(--crimson-hi), var(--crimson)); color: #fff; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); transition: filter .2s, transform .2s; cursor: pointer; font-family: inherit; font-size: 1rem; }
+.btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--paper); }
+.btn.ghost:hover { border-color: var(--gold); }
+.btn.sm { padding: 8px 16px; font-size: .9rem; }
+
+/* HERO */
+.hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 2px solid var(--gold); }
+.hero-bg { position: absolute; inset: 0; z-index: -2; background: url("img/hero.jpg") center 35% / cover no-repeat; transform: scale(1.04); animation: drift 28s ease-in-out infinite alternate; }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(13,10,11,.92) 0%, rgba(13,10,11,.7) 42%, rgba(13,10,11,.05) 80%), linear-gradient(0deg, var(--ink) 0%, transparent 35%); }
+.hero .wrap { padding-block: clamp(56px, 10vw, 120px) clamp(48px, 8vw, 96px); display: grid; gap: 28px; justify-items: start; }
+.hero .logo { width: min(520px, 92%); filter: drop-shadow(0 8px 24px rgba(0,0,0,.6)); }
+.tagline { font-family: var(--font-display); font-size: clamp(1.25rem, 2.6vw, 1.75rem); max-width: 30ch; }
+.hero .lede { color: var(--mist); max-width: 52ch; }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.chips li { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; border: 1px solid var(--line); background: rgba(26,17,19,.7); color: var(--mist); }
+@keyframes drift { from { transform: scale(1.04) translateX(0); } to { transform: scale(1.1) translateX(-1.5%); } }
+.petal { position: absolute; top: -20px; width: 10px; height: 8px; background: #f2a7b8; border-radius: 80% 0 80% 0; opacity: .75; z-index: -1; animation: fall linear infinite; }
+@keyframes fall { to { transform: translate(-120px, 110vh) rotate(540deg); } }
+
+/* SECTIONS */
+section { padding-block: clamp(64px, 9vw, 112px); }
+.eyebrow { display: flex; align-items: center; gap: 12px; font-size: .78rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.eyebrow .kanji { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 0; color: var(--crimson-hi); }
+.section-head { display: grid; gap: 12px; margin-bottom: 44px; max-width: 64ch; }
+.section-head h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
+.section-head p { color: var(--mist); }
+
+/* PILLARS */
+.pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.pillar { background: var(--lacquer); padding: 28px 24px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.pillar .k { font-family: var(--font-display); font-size: 2.4rem; color: var(--crimson-hi); line-height: 1; }
+.pillar h3 { font-size: 1.2rem; }
+.pillar p { color: var(--mist); font-size: .95rem; }
+
+/* LOOP */
+.band { background: var(--lacquer); border-block: 1px solid var(--line); }
+.loop { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; counter-reset: step; list-style: none; padding: 0; margin: 0; }
+.loop li { position: relative; padding: 22px 18px; background: var(--lacquer-2); border-top: 2px solid var(--gold); min-width: 0; }
+.loop li::before { counter-increment: step; content: counter(step); font-family: var(--font-display); font-size: .85rem; color: var(--gold); display: block; margin-bottom: 6px; }
+.loop b { display: block; font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 4px; }
+.loop span { color: var(--mist); font-size: .9rem; }
+
+/* FEATURES split */
+.split { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+.split + .split { margin-top: clamp(56px, 8vw, 96px); }
+.split.rev .shot { order: 2; }
+.shot { position: relative; border: 1px solid var(--gold); box-shadow: 0 20px 50px rgba(0,0,0,.55); background: var(--lacquer); }
+.shot::before, .shot::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--crimson-hi); }
+.shot::before { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
+.shot::after { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
+.split .text { display: grid; gap: 14px; min-width: 0; }
+.split h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+.split p { color: var(--mist); }
+.ticks { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 8px; }
+.ticks li { padding-left: 22px; position: relative; }
+.ticks li::before { content: ""; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; background: var(--crimson-hi); transform: rotate(45deg); }
+
+/* RESOURCES */
+.res { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.res div { padding: 20px; border: 1px solid var(--line); background: var(--lacquer-2); display: grid; gap: 4px; min-width: 0; }
+.res b { font-family: var(--font-display); font-size: 1.15rem; }
+.res small { color: var(--gold); letter-spacing: .1em; text-transform: uppercase; font-size: .72rem; }
+.res span { color: var(--mist); font-size: .9rem; }
+
+/* RANKS */
+.ranks { display: flex; align-items: stretch; gap: 0; border: 1px solid var(--line); }
+.rank { flex: 1; padding: 24px; background: var(--lacquer); min-width: 0; display: grid; gap: 6px; }
+.rank + .rank { border-left: 1px solid var(--line); }
+.rank .lvl { font-family: var(--font-display); font-size: 1.6rem; }
+.rank:nth-child(2) .lvl { color: var(--gold); }
+.rank:nth-child(3) .lvl { color: var(--crimson-hi); }
+.rank p { color: var(--mist); font-size: .92rem; }
+
+/* GALLERY */
+.gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.gallery button { padding: 0; border: 1px solid var(--line); background: var(--lacquer); cursor: zoom-in; overflow: hidden; aspect-ratio: 16 / 9; max-width: 100%; }
+.gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s, filter .4s; filter: saturate(.9); }
+.gallery button:hover img { transform: scale(1.05); filter: saturate(1.1); }
+.gallery button:first-child { grid-column: span 2; grid-row: span 2; }
+.lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(5,3,4,.94); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.lightbox img { max-height: 84vh; border: 1px solid var(--gold); }
+.lightbox figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.lightbox figcaption { color: var(--mist); font-size: .9rem; text-align: center; }
+.lightbox .close { position: absolute; top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); }
+
+/* MODES */
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.mode { padding: 26px; background: var(--lacquer-2); border: 1px solid var(--line); display: grid; gap: 10px; align-content: start; min-width: 0; }
+.mode h3 { font-size: 1.3rem; }
+.mode p { color: var(--mist); font-size: .95rem; }
+.tag { justify-self: start; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border: 1px solid currentColor; }
+.tag.ok { color: #7fc48a; }
+.tag.soon { color: var(--gold); }
+
+/* CONTROLS table */
+.tbl { overflow-x: auto; border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 520px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--gold); font-weight: 500; width: 28%; font-family: var(--font-display); }
+tr:last-child th, tr:last-child td { border-bottom: 0; }
+td { color: var(--mist); }
+kbd { font-family: var(--font-body); font-size: .82rem; padding: 1px 7px; border: 1px solid var(--line); border-bottom-width: 2px; background: var(--lacquer-2); color: var(--paper); }
+
+/* FAQ */
+.faq { display: grid; gap: 10px; max-width: 820px; }
+details { border: 1px solid var(--line); background: var(--lacquer); }
+summary { cursor: pointer; padding: 16px 20px; font-family: var(--font-display); font-size: 1.08rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--gold); font-size: 1.3rem; line-height: 1; }
+details[open] summary::after { content: "−"; }
+details p { padding: 0 20px 18px; color: var(--mist); }
+
+/* JOIN */
+.join { text-align: center; position: relative; overflow: hidden; }
+.join .wrap { display: grid; gap: 20px; justify-items: center; }
+.join h2 { font-size: clamp(2rem, 5vw, 3.2rem); }
+.join p { color: var(--mist); max-width: 56ch; }
+.join .big-k { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); font-family: var(--font-display); font-size: clamp(10rem, 30vw, 22rem); color: var(--crimson); opacity: .08; pointer-events: none; line-height: 1; white-space: nowrap; }
+
+.steps { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; color: var(--mist); }
+.steps b { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border: 1px solid var(--gold); color: var(--gold); font-family: var(--font-display); transform: rotate(45deg); }
+footer { border-top: 1px solid var(--line); padding-block: 28px; color: var(--mist); font-size: .85rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+@media (max-width: 900px) {
+  .nav ul { display: none; }
+  .pillars, .res { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .loop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split, .modes { grid-template-columns: minmax(0, 1fr); }
+  .split.rev .shot { order: 0; }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .pillars, .res, .loop { grid-template-columns: minmax(0, 1fr); }
+  .ranks { flex-direction: column; }
+  .rank + .rank { border-left: 0; border-top: 1px solid var(--line); }
+  .gallery { grid-template-columns: minmax(0, 1fr); }
+  .gallery button:first-child { grid-column: auto; grid-row: auto; }
+  .hero::after { background: linear-gradient(0deg, var(--ink) 5%, rgba(13,10,11,.75) 60%, rgba(13,10,11,.55)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-bg, .petal { animation: none; }
+  .petal { display: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="shuriken" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1l2.2 7.8L22 12l-7.8 2.2L12 23l-2.2-8.8L1 12l8.8-3.2zM12 10a2 2 0 100 4 2 2 0 000-4z" fill-rule="evenodd"/></symbol>
+</svg>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><svg class="shuriken"><use href="#shuriken"/></svg>SHINOBI EMPIRES</a>
+    <ul>
+      <li><a href="#juego">El juego</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="#modos">Modos</a></li>
+      <li><a href="#controles">Controles</a></li>
+      <li><a href="#faq">Preguntas</a></li>
+    </ul>
+    <a class="btn sm" href="#jugar">Descargar</a>
+  </div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="hero-bg" role="img" aria-label="Aldea ninja al atardecer con una cascada y dos ninjas mirando desde un acantilado"></div>
+  <div class="wrap">
+    <img class="logo" src="img/logo.png" alt="Shinobi Empires · 忍の帝国">
+    <p class="tagline">Levantá tu aldea. Entrená a tus ninjas. Defendé tu clan.</p>
+    <p class="lede">Estrategia en tiempo real en 3D low-poly: recolectá recursos, construí, subí de rango y llevá un ejército pequeño donde cada técnica de chakra puede dar vuelta una pelea. Solo contra la IA o con un aliado por Internet.</p>
+    <div class="cta">
+      <a class="btn" href="#jugar"><svg width="16" height="16"><use href="#shuriken"/></svg>Descargar gratis</a>
+      <a class="btn ghost" href="#galeria">Ver capturas</a>
+    </div>
+    <ul class="chips" aria-label="Datos rápidos">
+      <li>RTS</li><li>Windows 10/11</li><li>1 jugador offline</li><li>Cooperativo 2 jugadores</li><li>Partidas de 20–40 min</li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <section id="juego">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">道</span>El camino del clan</div>
+        <h2>La profundidad de un RTS clásico, con alma de shinobi</h2>
+        <p>Economía y construcción como en los grandes juegos de estrategia, mezcladas con unidades ninja que usan técnicas de chakra. Cuatro ideas guían todo el diseño.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar"><span class="k">村</span><h3>Tu aldea crece contigo</h3><p>Decidí qué recolectar, dónde expandirte y cuándo subir de rango de aldea.</p></article>
+        <article class="pillar"><span class="k">忍</span><h3>Pocos ninjas, mucho impacto</h3><p>Ejércitos medianos donde una técnica bien usada cambia el resultado.</p></article>
+        <article class="pillar"><span class="k">絆</span><h3>Juntos es mejor</h3><p>El cooperativo es un modo de primera clase: cada uno con su aldea, aliados contra la IA.</p></article>
+        <article class="pillar"><span class="k">家</span><h3>Tu clan es tu identidad</h3><p>Afiliate a 2 o 3 clanes de tu aldea. Cada uno desbloquea unidades, técnicas y bonos propios.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="ciclo">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">環</span>Una partida</div>
+        <h2 id="ciclo">El ciclo de cada partida</h2>
+      </div>
+      <ol class="loop">
+        <li><b>Recolectar</b><span>Aldeanos en árboles, canteras, arbustos y minas de ryō.</span></li>
+        <li><b>Construir</b><span>Casas, almacenes, cuarteles, granjas y torres de vigía.</span></li>
+        <li><b>Entrenar</b><span>Espadachines, lanzakunai, arqueros, elementales y tu Líder.</span></li>
+        <li><b>Combatir</b><span>Técnicas con Q/W/E/R o en uso automático.</span></li>
+        <li><b>Dominar</b><span>Asegurá las minas de ryō y derribá el centro de aldea rival.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-label="Características">
+    <div class="wrap">
+      <div class="split">
+        <figure class="shot" style="margin:0"><img src="img/13_combate.jpg" alt="Seis espadachines lanzan un corte giratorio contra el enemigo" loading="lazy"></figure>
+        <div class="text">
+          <div class="eyebrow"><span class="kanji">術</span>Combate</div>
+          <h3>Chakra propio para cada ninja</h3>
+          <p>Cada ninja tiene su barra de chakra debajo de la vida. Las técnicas gastan ese chakra y tienen recarga: las activás vos o dejás que tus tropas las usen solas cuando conviene.</p>
+          <ul class="ticks">
+            <li>Daño de corte, perforación y chakra contra armadura ligera, media o pesada</li>
+            <li>Elementos con ventajas: el agua le gana al fuego y pierde contra la tierra</li>
+            <li>Clic derecho en una técnica prende o apaga su uso automático</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="split rev">
+        <figure class="shot" style="margin:0"><img src="img/15b_elemental_agua.jpg" alt="Aldea con casas tradicionales y un elemental de agua seleccionado" loading="lazy"></figure>
+        <div class="text">
+          <div class="eyebrow"><span class="kanji">建</span>Construcción</div>
+          <h3>Levantá tu aldea piedra por piedra</h3>
+          <p>Elegí dónde construir, mandá más aldeanos para terminar antes y subí el rango de tu aldea para desbloquear edificios y unidades nuevas.</p>
+          <div class="res" style="margin-top:8px">
+            <div><small>Madera</small><b>Árboles</b><span>Edificios y arqueros</span></div>
+            <div><small>Comida</small><b>Bayas y granjas</b><span>Aldeanos y tropas</span></div>
+            <div><small>Piedra</small><b>Canteras</b><span>Defensas y rangos</span></div>
+            <div><small>Ryō 両</small><b>Minas de oro</b><span>Élite y tecnologías</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="rangos">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">階</span>Progresión</div>
+        <h2 id="rangos">De genin a jōnin</h2>
+        <p>Investigá rangos en el cuartel o el campo de tiro y mejorá a toda la línea de unidades a la vez. Aparte, cada ninja gana veteranía peleando, y la pierde si cae.</p>
+      </div>
+      <div class="ranks">
+        <div class="rank"><span class="lvl">Genin</span><p>Ropa shinobi sencilla y equipo básico. Así empieza cada línea.</p></div>
+        <div class="rank"><span class="lvl">Chūnin</span><p>Más vida, daño y chakra máximo. Chaleco y protecciones visibles en el modelo.</p></div>
+        <div class="rank"><span class="lvl">Jōnin</span><p>Silueta imponente y una segunda técnica desbloqueada.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="galeria" aria-labelledby="gal-t">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">絵</span>Galería</div>
+        <h2 id="gal-t">Capturas del juego</h2>
+        <p>Imágenes reales de la versión en desarrollo. Tocá una para verla grande.</p>
+      </div>
+      <div class="gallery" id="gallery">
+        <button type="button" data-cap="La Aldea de la Arena: aldeanos, ninjas y un elemental cargando chakra"><img src="img/31_arena_unidades.jpg" alt="Unidades de la Aldea de la Arena" loading="lazy"></button>
+        <button type="button" data-cap="Comienzo de partida: aldeanos y espadachines junto al centro de aldea"><img src="img/02_skirmish.jpg" alt="Comienzo de una partida" loading="lazy"></button>
+        <button type="button" data-cap="Lluvia sobre la aldea después de un combate"><img src="img/15e_lluvia.jpg" alt="Aldea bajo la lluvia" loading="lazy"></button>
+        <button type="button" data-cap="Espadachines usando su técnica en grupo"><img src="img/13_combate.jpg" alt="Combate de espadachines" loading="lazy"></button>
+        <button type="button" data-cap="Un elemental de agua y su técnica Ola"><img src="img/15b_elemental_agua.jpg" alt="Elemental de agua" loading="lazy"></button>
+        <button type="button" data-cap="¡Victoria! El clan rival cayó"><img src="img/40_victoria.jpg" alt="Pantalla de victoria" loading="lazy"></button>
+      </div>
+    </div>
+    <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Captura ampliada">
+      <button class="btn ghost sm close" type="button" id="lb-close">Cerrar ✕</button>
+      <figure><img id="lb-img" src="" alt=""><figcaption id="lb-cap"></figcaption></figure>
+    </div>
+  </section>
+
+  <section id="modos" class="band" aria-labelledby="modos-t">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">戦</span>Modos</div>
+        <h2 id="modos-t">Jugá solo o con un aliado</h2>
+      </div>
+      <div class="modes">
+        <article class="mode"><span class="tag ok">Disponible</span><h3>Escaramuza vs IA</h3><p>Sin Internet ni cuenta. La IA juega con las mismas reglas y órdenes que vos, sin trampas.</p></article>
+        <article class="mode"><span class="tag ok">Disponible</span><h3>Cooperativo 2 jugadores</h3><p>Cada uno con su aldea, aliados contra la IA. Por Internet con un código de 6 caracteres o por IP directa. Recursos separados o compartidos.</p></article>
+        <article class="mode"><span class="tag soon">Más adelante</span><h3>Campaña</h3><p>Una historia para jugar solo o en cooperativo. El PvP llegará después.</p></article>
+      </div>
+      <p style="margin-top:20px;color:var(--mist);font-size:.92rem">Guardado local con autoguardado cada 3 minutos. En cooperativo guarda el anfitrión y los dos siguen la partida al volver a conectarse.</p>
+    </div>
+  </section>
+
+  <section id="controles" aria-labelledby="ctl-t">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">手</span>Controles</div>
+        <h2 id="ctl-t">Cómo se juega</h2>
+      </div>
+      <div class="tbl">
+        <table>
+          <tr><th>Seleccionar</th><td>Clic izquierdo · arrastrar para caja · <kbd>Shift</kbd> suma o quita · doble clic elige todos los del mismo tipo</td></tr>
+          <tr><th>Mover y atacar</th><td>Clic derecho en el suelo o sobre un enemigo</td></tr>
+          <tr><th>Recolectar</th><td>Con aldeanos, clic derecho en un árbol, roca o arbusto de bayas</td></tr>
+          <tr><th>Técnicas</th><td><kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> o clic en el botón · clic derecho en el botón = uso automático</td></tr>
+          <tr><th>Construir</th><td>Aldeanos → botón del edificio → clic en el suelo (verde = se puede) · <kbd>Shift</kbd> para varios</td></tr>
+          <tr><th>Cámara</th><td><kbd>WASD</kbd> o flechas · rueda = zoom · <kbd>Q</kbd>/<kbd>E</kbd> o botón central = rotar</td></tr>
+          <tr><th>Menú</th><td><kbd>F10</kbd> para guardar, cargar u opciones · <kbd>Esc</kbd> cancela o deselecciona</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="band" aria-labelledby="faq-t">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow"><span class="kanji">問</span>Preguntas</div>
+        <h2 id="faq-t">Preguntas frecuentes</h2>
+      </div>
+      <div class="faq">
+        <details open><summary>¿En qué puedo jugarlo?</summary><p>En Windows 10 u 11. Es un juego para PC con mouse y teclado.</p></details>
+        <details><summary>¿Necesito Internet?</summary><p>No para jugar solo: el modo individual funciona completamente offline, sin cuenta. Internet solo hace falta para el cooperativo por código.</p></details>
+        <details><summary>¿Cómo juego con un amigo?</summary><p>El anfitrión elige Cooperativo → Crear por Internet y le pasa el código de partida. El invitado lo escribe y se une. Los dos tienen que tener la misma versión del juego.</p></details>
+        <details><summary>¿Está terminado?</summary><p>No. Está en desarrollo activo: el arte, las unidades y los clanes siguen creciendo con cada versión.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="join" id="jugar" aria-labelledby="jugar-t">
+    <span class="big-k" aria-hidden="true">忍</span>
+    <div class="wrap">
+      <div class="eyebrow"><span class="kanji">参</span>Unite al clan</div>
+      <h2 id="jugar-t">Descargá Shinobi Empires</h2>
+      <p>Gratis para Windows 10 y 11. Bajá el ZIP, descomprimilo en una carpeta y abrí <b style="color:var(--paper)">ShinobiEmpires.exe</b>. Para jugar en cooperativo, los dos tienen que tener la misma versión.</p>
+      <a class="btn" href="https://github.com/Freshkz/shinobi-empires-web/releases/latest/download/ShinobiEmpires.zip"><svg width="16" height="16"><use href="#shuriken"/></svg>Descargar para Windows</a>
+      <ol class="steps"><li><b>1</b>Descargá el ZIP</li><li><b>2</b>Descomprimilo</li><li><b>3</b>Abrí ShinobiEmpires.exe</li></ol>
+      <p style="font-size:.85rem">Si Windows muestra «Windows protegió tu PC», tocá <b style="color:var(--paper)">Más información → Ejecutar de todas formas</b>. Pasa con juegos chicos que no están firmados.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Shinobi Empires · título de trabajo · hecho por Fresh</span>
+    <span>RTS en desarrollo · Unity · 2026</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const hero = document.querySelector('.hero');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('span');
+      p.className = 'petal';
+      p.style.left = (Math.random() * 110) + '%';
+      p.style.animationDuration = (9 + Math.random() * 10) + 's';
+      p.style.animationDelay = (-Math.random() * 18) + 's';
+      p.style.transform = 'scale(' + (0.6 + Math.random() * 0.8) + ')';
+      hero.appendChild(p);
+    }
+  }
+
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lb-img');
+  const cap = document.getElementById('lb-cap');
+  const closeBtn = document.getElementById('lb-close');
+  let opener = null;
+  document.getElementById('gallery').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    const src = b.querySelector('img');
+    img.src = src.src; img.alt = src.alt; cap.textContent = b.dataset.cap || '';
+    opener = b; lb.hidden = false; closeBtn.focus();
+  });
+  const close = () => { lb.hidden = true; if (opener) opener.focus(); };
+  closeBtn.addEventListener('click', close);
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !lb.hidden) close(); });
+})();
+</script>
+</body>
+</html>
