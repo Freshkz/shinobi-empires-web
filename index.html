@@ -172,6 +172,7 @@ details p { padding: 0 20px 18px; color: var(--mist); }
 
 .steps { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; color: var(--mist); }
 .steps b { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border: 1px solid var(--gold); color: var(--gold); font-family: var(--font-display); transform: rotate(45deg); }
+.ver { font-size: .85rem; letter-spacing: .06em; color: var(--gold); }
 footer { border-top: 1px solid var(--line); padding-block: 28px; color: var(--mist); font-size: .85rem; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
 
@@ -394,6 +395,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <h2 id="jugar-t">Descargá Shinobi Empires</h2>
       <p>Gratis para Windows 10 y 11. Bajá el ZIP, descomprimilo en una carpeta y abrí <b style="color:var(--paper)">ShinobiEmpires.exe</b>. Para jugar en cooperativo, los dos tienen que tener la misma versión.</p>
       <a class="btn" href="https://github.com/Freshkz/shinobi-empires-web/releases/latest/download/ShinobiEmpires.zip"><svg width="16" height="16"><use href="#shuriken"/></svg>Descargar para Windows</a>
+      <p class="ver" id="ver">Buscando la última versión…</p>
       <ol class="steps"><li><b>1</b>Descargá el ZIP</li><li><b>2</b>Descomprimilo</li><li><b>3</b>Abrí ShinobiEmpires.exe</li></ol>
       <p style="font-size:.85rem">Si Windows muestra «Windows protegió tu PC», tocá <b style="color:var(--paper)">Más información → Ejecutar de todas formas</b>. Pasa con juegos chicos que no están firmados.</p>
     </div>
@@ -422,6 +424,16 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       hero.appendChild(p);
     }
   }
+
+  const ver = document.getElementById('ver');
+  fetch('https://api.github.com/repos/Freshkz/shinobi-empires-web/releases/latest')
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(rel => {
+      const a = (rel.assets || []).find(x => x.name === 'ShinobiEmpires.zip');
+      const fecha = new Date(rel.published_at).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+      ver.textContent = 'Versión ' + rel.tag_name.replace(/^v/, '') + ' · ' + fecha + (a ? ' · ' + Math.round(a.size / 1048576) + ' MB' : '');
+    })
+    .catch(() => { ver.textContent = 'Próximamente: la primera versión todavía no está publicada.'; });
 
   const lb = document.getElementById('lightbox');
   const img = document.getElementById('lb-img');
