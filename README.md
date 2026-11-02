@@ -5,7 +5,7 @@ El juego se descarga desde la sección Releases (`ShinobiEmpires.zip`).
 
 ## Publicar una versión nueva del juego
 
-1. Generar el build de Windows del juego (`shinobi-empires\Builds\Windows`).
+1. Generar el build de Windows del juego (`Builds\Windows` dentro de la carpeta del juego).
 2. Doble clic en `publicar_juego.bat`. Comprime el build y lo sube como Release; la página baja siempre la última.
 
 Requisitos en cada PC: este repo clonado **al lado** del juego (misma carpeta padre; el script busca solo la carpeta del juego, se llame como se llame, y si hay varias usa el build más nuevo) y `gh auth login` hecho.
