@@ -20,6 +20,25 @@ $ErrorActionPreference = "Stop"
 $repo  = "Freshkz/shinobi-empires-web"
 function Salir($msg) { Write-Host ""; Write-Host $msg -ForegroundColor Red; exit 1 }
 
+# Corre gh y devuelve su codigo de salida. En PowerShell 5.1, con ErrorActionPreference = Stop, cualquier texto que gh
+# escriba en stderr (p. ej. "release not found", que es lo esperado al ver si una version ya existe, o el progreso de la
+# subida) corta el script como si fuera un error: por eso se baja a Continue solo mientras corre gh.
+function Invocar-GitHub {
+    $antes = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try { & gh.exe @args 2>&1 | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.ToString() } else { $_ } } | Out-Host }
+    finally { $ErrorActionPreference = $antes }
+    return $LASTEXITCODE
+}
+
+function Invocar-GitHubSilencioso {
+    $antes = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try { & gh.exe @args *> $null }
+    finally { $ErrorActionPreference = $antes }
+    return $LASTEXITCODE
+}
+
 # Busca el juego compilado en las carpetas hermanas de esta (se llame "shinobi-empires", "Shinobi Empires" o como sea).
 # Si hay mas de uno, usa el build mas nuevo.
 function Buscar-Build {
@@ -47,8 +66,7 @@ if (-not (Test-Path (Join-Path $build "ShinobiEmpires.exe"))) {
     Salir "No encontre el juego compilado en $build. Primero genera el build de Windows."
 }
 if (-not $Prueba) {
-    gh auth status *> $null
-    if ($LASTEXITCODE -ne 0) { Salir "GitHub no tiene sesion iniciada. Corre: gh auth login" }
+    if ((Invocar-GitHubSilencioso auth status) -ne 0) { Salir "GitHub no tiene sesion iniciada. Corre: gh auth login" }
 }
 
 # Version = fecha y hora del build (asi dos builds distintos nunca chocan).
@@ -59,8 +77,7 @@ $version = "v" + $fecha.ToString("yyyy.MM.dd-HHmm")
 Write-Host "Version a publicar: $version (build del $($fecha.ToString('dd/MM/yyyy HH:mm')))" -ForegroundColor Yellow
 
 if (-not $Prueba) {
-    gh release view $version --repo $repo *> $null
-    if ($LASTEXITCODE -eq 0) { Salir "La version $version ya esta publicada. Genera un build nuevo antes de volver a publicar." }
+    if ((Invocar-GitHubSilencioso release view $version --repo $repo) -eq 0) { Salir "La version $version ya esta publicada. Genera un build nuevo antes de volver a publicar." }
 }
 
 # Copia temporal sin las carpetas de depuracion (no se reparten) y ZIP con tar (rapido, sin limite de 2 GB).
@@ -90,8 +107,7 @@ try {
 
     if (-not $Notas) { $Notas = "Build del $($fecha.ToString('dd/MM/yyyy HH:mm')). Descomprimi el ZIP y abri ShinobiEmpires.exe." }
     Write-Host "Subiendo a GitHub (puede tardar unos minutos)..."
-    gh release create $version $zip --repo $repo --title "Shinobi Empires $version" --notes $Notas --latest
-    if ($LASTEXITCODE -ne 0) { Salir "Fallo la subida a GitHub." }
+    if ((Invocar-GitHub release create $version $zip --repo $repo --title "Shinobi Empires $version" --notes $Notas --latest) -ne 0) { Salir "Fallo la subida a GitHub." }
 
     Write-Host ""
     Write-Host "Publicado $version ($mb MB)." -ForegroundColor Green
