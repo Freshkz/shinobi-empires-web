@@ -5,9 +5,9 @@
 # Uso:  doble clic en publicar_juego.bat
 #       o: powershell -ExecutionPolicy Bypass -File publicar_juego.ps1 [-Notas "que cambio"] [-Prueba]
 #   -Prueba : solo arma el ZIP (no sube nada) para revisar que todo anda.
-#   -Build  : carpeta del build, si el juego no esta clonado al lado de esta carpeta.
+#   -Build  : carpeta del build (si no, lo busca solo en las carpetas al lado de esta).
 #
-# Funciona en cualquier PC: clonar este repo al lado de "shinobi-empires" (misma carpeta padre)
+# Funciona en cualquier PC: clonar este repo al lado del juego (misma carpeta padre, con cualquier nombre)
 # y tener gh con sesion iniciada (gh auth login).
 
 param(
@@ -18,10 +18,30 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repo  = "Freshkz/shinobi-empires-web"
-if ($Build) { $build = $Build } else { $build = Join-Path $PSScriptRoot "..\shinobi-empires\Builds\Windows" }
-$build = [System.IO.Path]::GetFullPath($build)
-
 function Salir($msg) { Write-Host ""; Write-Host $msg -ForegroundColor Red; exit 1 }
+
+# Busca el juego compilado en las carpetas hermanas de esta (se llame "shinobi-empires", "Shinobi Empires" o como sea).
+# Si hay mas de uno, usa el build mas nuevo.
+function Buscar-Build {
+    $padre = Split-Path $PSScriptRoot -Parent
+    $encontrados = Get-ChildItem $padre -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        $candidato = Join-Path $_.FullName "Builds\Windows"
+        $datos = Join-Path $candidato "ShinobiEmpires_Data"
+        if ((Test-Path (Join-Path $candidato "ShinobiEmpires.exe")) -and (Test-Path $datos)) {
+            [pscustomobject]@{ Ruta = $candidato; Fecha = (Get-Item $datos).LastWriteTime }
+        }
+    }
+    $mejor = $encontrados | Sort-Object Fecha -Descending | Select-Object -First 1
+    if ($mejor) { return $mejor.Ruta }
+    return $null
+}
+
+if ($Build) { $build = $Build } else { $build = Buscar-Build }
+if (-not $build) {
+    Salir "No encontre el juego compilado en ninguna carpeta al lado de esta. Genera el build de Windows o usa -Build `"ruta\Builds\Windows`"."
+}
+$build = [System.IO.Path]::GetFullPath($build)
+Write-Host "Juego: $build"
 
 if (-not (Test-Path (Join-Path $build "ShinobiEmpires.exe"))) {
     Salir "No encontre el juego compilado en $build. Primero genera el build de Windows."
